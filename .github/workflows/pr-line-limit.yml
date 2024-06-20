@@ -15,14 +15,20 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v4
 
+      - name: Fetch main branch
+        run: git fetch origin main
+
       - name: Count lines of code changed
         id: line_count
         run: |
-          # Fetch the main branch to compare
-          git fetch origin main:main
+          # Ensure the main branch is up to date
+          git checkout main
+          git pull origin main
+          # Switch back to the PR branch
+          git checkout -
           # Calculate the diff
-          ADDED_LINES=$(git diff --shortstat origin/main...HEAD | awk '{print $4}')
-          DELETED_LINES=$(git diff --shortstat origin/main...HEAD | awk '{print $6}')
+          ADDED_LINES=$(git diff --shortstat main...HEAD | awk '{print $4}')
+          DELETED_LINES=$(git diff --shortstat main...HEAD | awk '{print $6}')
           TOTAL_LINES=$((ADDED_LINES + DELETED_LINES))
           echo "Total lines changed: $TOTAL_LINES"
           echo "ADDED_LINES=$ADDED_LINES" >> $GITHUB_ENV
@@ -37,4 +43,3 @@ jobs:
           else
             echo "Line changes within limit: ${{ env.TOTAL_LINES }} (max 10)"
           fi
-
