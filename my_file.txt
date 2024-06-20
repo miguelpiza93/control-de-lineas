@@ -1,1 +1,5 @@
-This is my file to test the workflow
+This is my file to test the workflow.
+In this PR
+I'm just updating some lines
+But I won't reach the limit
+So the workflow will pass.
