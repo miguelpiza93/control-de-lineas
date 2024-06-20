@@ -18,18 +18,23 @@ jobs:
       - name: Count lines of code changed
         id: line_count
         run: |
-          # LINES_ADDED=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD | awk '{print $4}')
-          # LINES_DELETED=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD | awk '{print $6}')
-          LINES_CHANGED=$(git diff --name-only ${{ github.base_ref}} ${{ github.sha }})
-          echo "Total lines changed: $LINES_CHANGED"
-          echo "::set-output name=lines_changed::$LINES_CHANGED"
+          # Fetch the main branch to compare
+          git fetch origin main:main
+          # Calculate the diff
+          ADDED_LINES=$(git diff --shortstat origin/main...HEAD | awk '{print $4}')
+          DELETED_LINES=$(git diff --shortstat origin/main...HEAD | awk '{print $6}')
+          TOTAL_LINES=$((ADDED_LINES + DELETED_LINES))
+          echo "Total lines changed: $TOTAL_LINES"
+          echo "ADDED_LINES=$ADDED_LINES" >> $GITHUB_ENV
+          echo "DELETED_LINES=$DELETED_LINES" >> $GITHUB_ENV
+          echo "TOTAL_LINES=$TOTAL_LINES" >> $GITHUB_ENV
 
       - name: Fail if too many lines are changed
         run: |
-          if [ ${{ steps.line_count.outputs.lines_changed }} -gt 10 ]; then
-            echo "Too many lines changed: ${{ steps.line_count.outputs.lines_changed }} (max 10)"
+          if [ ${{ env.TOTAL_LINES }} -gt 10 ]; then
+            echo "Too many lines changed: ${{ env.TOTAL_LINES }} (max 10)"
             exit 1
           else
-            echo "Line changes within limit: ${{ steps.line_count.outputs.lines_changed }} (max 10)"
+            echo "Line changes within limit: ${{ env.TOTAL_LINES }} (max 10)"
           fi
 
