@@ -18,9 +18,9 @@ jobs:
       - name: Count lines of code changed
         id: line_count
         run: |
-          LINES_ADDED=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD | awk '{print $4}')
-          LINES_DELETED=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD | awk '{print $6}')
-          LINES_CHANGED=$((LINES_ADDED + LINES_DELETED))
+          # LINES_ADDED=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD | awk '{print $4}')
+          # LINES_DELETED=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD | awk '{print $6}')
+          LINES_CHANGED=$(git diff --name-only ${{ github.base_ref}} ${{ github.sha }})
           echo "Total lines changed: $LINES_CHANGED"
           echo "::set-output name=lines_changed::$LINES_CHANGED"
 
