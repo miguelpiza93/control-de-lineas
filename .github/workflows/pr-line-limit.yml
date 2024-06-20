@@ -14,12 +14,14 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensure full history is fetched
 
       - name: Count lines of code changed
         id: line_count
         run: |
           # Fetch the main branch to compare
-          git fetch origin main:main
+          git fetch origin main
           # Calculate the diff
           ADDED_LINES=$(git diff --shortstat origin/main...HEAD | awk '{print $4}')
           DELETED_LINES=$(git diff --shortstat origin/main...HEAD | awk '{print $6}')
@@ -37,4 +39,3 @@ jobs:
           else
             echo "Line changes within limit: ${{ env.TOTAL_LINES }} (max 10)"
           fi
-
